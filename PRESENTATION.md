@@ -125,27 +125,28 @@
 [FastAPI Backend]
       |
       |-- get_patient_data() --> [Mock Patient Record]
-      |-- search_protocols() --> [Protocol Library]
       |
       v
 [ThreadPoolExecutor — 4 agents in parallel]
-  |           |           |           |
-[Vitals]  [Symptom]  [Protocol]  [Bed Alloc]
- Haiku      Haiku      Haiku       Haiku
-  |           |           |           |
-  +-----+-----+-----------+
-              |
-              v
-       [Synthesizer]
-          Sonnet
-              |
-     generate_triage_report()
-              |
-              v
-    [Structured Report JSON]
-              |
-              v
-      [SSE Stream → React UI]
+  |              |                |              |
+[Vitals]      [Symptom]       [Protocol]     [Bed Alloc]
+ Haiku          Haiku            Haiku          Haiku
+   |                               |              |
+calculate_news2_score()    search_protocols()  check_bed_availability()
+  |              |                |              |
+  +--------------+----------------+--------------+
+                          |
+                          v
+                   [Synthesizer]
+                      Sonnet
+                          |
+             generate_triage_report()
+                          |
+                          v
+              [Structured Report JSON]
+                          |
+                          v
+                [SSE Stream → React UI]
 ```
 
 **Speaker note:** The parallel execution step is where the ~75% latency improvement came from. All four specialists analyze simultaneously rather than waiting for each other.
@@ -158,7 +159,7 @@
 
 | Agent | Model | Role |
 |---|---|---|
-| Vitals Analyzer | Haiku | Scores vital abnormalities 1–5, flags hemodynamic instability |
+| Vitals Analyzer | Haiku | Calls calculate_news2_score() → NEWS2 risk level + per-vital severity score |
 | Symptom Classifier | Haiku | Identifies red-flag presentations: ACS, stroke, sepsis, respiratory failure |
 | Protocol Matcher | Haiku | Maps presentation to evidence-based protocols and ordered interventions |
 | Bed Allocator | Haiku | Recommends care area (trauma bay, resus, fast track) and required equipment |
@@ -175,11 +176,12 @@
 
 **Body:**
 - Claude's **Tool Use** feature lets agents call structured functions mid-conversation
-- TriageIQ exposes four tools to the agents:
+- TriageIQ exposes five tools to the agents:
 
 | Tool | What It Does |
 |---|---|
 | `get_patient_data` | Fetches full patient record by ID |
+| `calculate_news2_score` | Computes standardized NEWS2 risk score from raw vitals |
 | `search_protocols` | Keyword-matches clinical protocols to chief complaint |
 | `check_bed_availability` | Returns real-time bed counts by care area |
 | `generate_triage_report` | Assembles and returns the structured report dict |
