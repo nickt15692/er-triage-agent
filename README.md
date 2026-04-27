@@ -45,14 +45,15 @@ npm install && npm run dev
 
 ---
 
-## The 5 Agents
+## The 6 Agents
 
 | Agent | File | What it does |
 |---|---|---|
 | Coordinator | `orchestrator.py` | Receives patient, dispatches specialists, calls generate_triage_report() |
-| Vitals Analyzer | `agents.py` | BP/HR/RR/SpO2/temp/GCS → severity score |
+| Vitals Analyzer | `agents.py` | Calls calculate_news2_score() → NEWS2 risk level + per-vital analysis |
 | Symptom Classifier | `agents.py` | Chief complaint → red flags → urgency |
-| Protocol Matcher | `agents.py` | Searches protocol KB → matched protocol + steps |
+| Protocol Matcher | `agents.py` | Calls search_protocols() → matched protocol + time-sensitive steps |
+| Bed Allocator | `agents.py` | Calls check_bed_availability() → care area based on actual bed counts |
 | Synthesizer | `orchestrator.py` | All findings → ESI 1-5 + action plan |
 
 ---
@@ -65,7 +66,7 @@ triageiq/
 ├── requirements.txt
 ├── .env                   ← Your API key
 ├── backend/
-│   ├── tools.py           ← 4 tool functions + schemas
+│   ├── tools.py           ← 5 tool functions + schemas
 │   ├── agents.py          ← 5 system prompts
 │   ├── orchestrator.py    ← Multi-agent coordination loop
 │   └── main.py            ← FastAPI: /patients + /triage/stream/{id}
