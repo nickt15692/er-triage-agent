@@ -129,5 +129,3 @@ triageiq/
 | POST | `/chat` | Context-aware AI chat about a completed triage report |
 
 ---
-
-*TriageIQ · Project 2/3 · BUAN 6v99.s01 · UT Dallas · April 2026*
