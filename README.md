@@ -1,5 +1,4 @@
 # TriageIQ — ER Multi-Agent Decision Support
-## Project 2/3 · BUAN 6v99.s01 · UT Dallas · April 2026
 
 An AI-powered clinical triage assistant built on a 6-agent Claude pipeline. Specialists run in parallel, the synthesizer assigns an ESI 1–5 score, and nurses can override the decision directly in the UI.
 
